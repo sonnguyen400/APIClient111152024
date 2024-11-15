@@ -10,13 +10,14 @@ import java.util.List;
 
 public abstract class AbstractAlbumService {
     final static String url = "https://jsonplaceholder.typicode.com/albums";
-
+    abstract public Album findById(long id) throws IOException;
     abstract public List<Album> findAll() throws IOException;
 
     final protected List<Album> parseAlbumlist(String json) throws IOException {
         List<JSONObject> results = (List<JSONObject>) JSONValue.parse(new StringReader(json));
-        return results.stream().map((jsonObject) -> {
-            return new Album((long) jsonObject.get("id"), (long) jsonObject.get("userId"), (String) jsonObject.get("title"));
-        }).toList();
+        return results.stream().map(this::parseAlbum).toList();
+    }
+    final protected Album parseAlbum(JSONObject jsonObject) {
+        return new Album((long) jsonObject.get("id"), (long) jsonObject.get("userId"), (String) jsonObject.get("title"));
     }
 }
